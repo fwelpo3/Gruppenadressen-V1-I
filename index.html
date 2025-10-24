@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KNX Gruppenadressen-Generator Pro</title>
+    <script src="https://tailwind21.netlify.app/"></script>
+    <style>
+      kbd {
+        background-color: #4A5568; /* slate-600 */
+        border-radius: 4px;
+        border: 1px solid #718096; /* slate-500 */
+        padding: 2px 6px;
+        font-family: monospace;
+        font-size: 0.9em;
+        color: #E2E8F0; /* slate-200 */
+        margin: 0 2px;
+      }
+      /* Custom Scrollbar Styles */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #1e293b; /* slate-800 */
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #475569; /* slate-600 */
+        border-radius: 10px;
+        border: 3px solid #1e293b; /* slate-800 */
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #64748b; /* slate-500 */
+      }
+      /* Compact Mode Styles */
+      .compact-mode .structure-editor-areas > :not([hidden]) ~ :not([hidden]) {
+        margin-top: 0.5rem; /* equvalent to space-y-2 */
+      }
+      .compact-mode .area-card-header,
+      .compact-mode .area-card-content {
+        padding: 0.5rem; /* equivalent to p-2 */
+      }
+      .compact-mode .area-card-rooms > :not([hidden]) ~ :not([hidden]) {
+        margin-top: 0.5rem; /* equivalent to space-y-2 */
+      }
+      .compact-mode .room-card-header {
+        padding: 0.5rem; /* equivalent to p-2 */
+      }
+      .compact-mode .room-card-content {
+        padding: 0.5rem; /* equivalent to p-2 */
+        padding-top: 0.25rem; /* equivalent to pt-1 */
+      }
+      .compact-mode .room-card-functions-grid {
+        column-gap: 0.5rem; /* equivalent to gap-x-2 */
+        row-gap: 0.125rem; /* equivalent to gap-y-0.5 */
+      }
+      .compact-mode .room-card-function-item {
+        padding-top: 0.25rem; /* equivalent to py-1 */
+        padding-bottom: 0.25rem; /* equivalent to py-1 */
+      }
+      /* GaNameTemplateBuilder Styles */
+      .template-builder-drop-indicator {
+        width: 2px;
+        height: 1.75rem; /* h-7 */
+        background-color: #38bdf8; /* sky-400 */
+        border-radius: 1px;
+        align-self: center;
+      }
+      .template-part-chip {
+        opacity: 1;
+        transition: opacity 0.2s ease-in-out;
+      }
+      .template-part-chip.dragging {
+        opacity: 0.4;
+      }
+      .template-part-chip.drag-over {
+        /* Add a subtle visual cue if dragging over a part for replacement */
+        outline: 2px dashed #64748b; /* slate-500 */
+      }
+      .ga-template-textarea {
+        font-family: monospace;
+        background-color: #0f172a; /* slate-900 */
+        border: 1px solid #334155; /* slate-700 */
+        color: #94a3b8; /* slate-400 */
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        min-height: 4rem;
+        width: 100%;
+        resize: vertical;
+      }
+      .ga-template-textarea:focus {
+        outline: none;
+        border-color: #0ea5e9; /* sky-500 */
+        box-shadow: 0 0 0 2px #0ea5e9;
+      }
+
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.17.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-slate-900 text-slate-200 antialiased selection:bg-sky-500 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
