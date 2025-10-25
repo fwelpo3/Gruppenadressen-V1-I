@@ -1,4 +1,5 @@
 
+
 import { Project, FunctionType, ViewOptions, AiSettings, Area, Room, FunctionInstance, GaFunction, DeviceConfig } from '../../domain';
 import { DEFAULT_DEVICE_CONFIG } from '../config/deviceConfig';
 
@@ -174,9 +175,9 @@ export const saveApiKey = (apiKey: string): void => {
 export const loadApiKey = (): string => {
     try {
         const savedKey = localStorage.getItem(API_KEY_STORAGE_KEY);
-        return savedKey || 'AIzaSyC9N8ydc_4IdCybpJy5i3xgohCkKIJd6QE';
+        return savedKey || '';
     } catch (error) {
         console.error("Fehler beim Laden des API-Schlüssels:", error);
-        return 'AIzaSyC9N8ydc_4IdCybpJy5i3xgohCkKIJd6QE';
+        return '';
     }
 };
