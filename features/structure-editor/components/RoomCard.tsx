@@ -189,7 +189,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room, area, roomIndex, onRoo
                 </span>
                 <button 
                   onClick={(e) => { e.stopPropagation(); setIsSaveModalOpen(true); }} 
-                  disabled={!project.aiSettings.enableTemplateLearning || room.functionInstances.length === 0}
+                  disabled={room.functionInstances.length === 0}
                   className="p-1 text-slate-400 hover:text-sky-400 disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Als Vorlage speichern"
                 >

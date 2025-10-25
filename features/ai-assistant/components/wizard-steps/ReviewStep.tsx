@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import { AiProjectSuggestion, AiAreaSuggestion, FunctionType } from '../../../../domain';
 import { TrashIcon } from '../../../../shared/ui/icons';
 
+const functionLabels: Record<string, string> = {
+    lightSwitch: 'Licht (Schalten)',
+    lightDim: 'Licht (Dimmen)',
+    blinds: 'Jalousie',
+    heating: 'Heizung',
+};
+
 export const ReviewStep: React.FC<{ 
     initialSuggestion: AiProjectSuggestion; 
     onApply: (suggestion: AiProjectSuggestion) => void;
@@ -72,8 +79,7 @@ export const ReviewStep: React.FC<{
                                     <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                                         {(['lightSwitch', 'lightDim', 'blinds', 'heating'] as (keyof typeof room.functions)[]).map(type => (
                                             <div key={type} className="flex items-center justify-between">
-{/* @_FIX_ */}
-                                                <label className="capitalize text-slate-300">{(type as string).replace('light', 'Licht ')}</label>
+                                                <label className="text-slate-300">{functionLabels[type] || type}</label>
                                                 <input type="number" min="0" value={room.functions[type] || 0} onChange={e => handleFunctionChange(area.id, room.id, type as FunctionType, parseInt(e.target.value) || 0)} className="w-16 bg-slate-900/50 text-center rounded focus:outline-none focus:ring-1 focus:ring-sky-500" />
                                             </div>
                                         ))}

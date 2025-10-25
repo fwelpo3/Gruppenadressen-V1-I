@@ -1,4 +1,5 @@
 
+
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { generateGaName } from '../../../domain';
 import { useProjectContext } from '../../../context/ProjectContext';
@@ -97,7 +98,8 @@ export const GaNameTemplateEditor: React.FC<{ isSettingsPanel?: boolean }> = ({ 
         if (editorMode !== 'chips' || !editorRef.current) return;
     
         const rect = editorRef.current.getBoundingClientRect();
-        const children = Array.from(editorRef.current.children).filter(c => c.id.startsWith('part-'));
+        // FIX: Cast child element to HTMLElement to resolve TypeScript error about property 'id' not existing on type 'unknown'. This ensures type safety when accessing the 'id' property for filtering.
+        const children = Array.from(editorRef.current.children).filter(c => (c as HTMLElement).id.startsWith('part-'));
         
         let newDropIndex = children.length;
         for (let i = 0; i < children.length; i++) {

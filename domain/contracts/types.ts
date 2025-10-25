@@ -105,13 +105,25 @@ export interface ViewOptions {
   showGaNameTemplateEditor: boolean;
 }
 
-// NEU: Einstellungen für den KI Co-Pilot
+// Einstellungen für den KI-Assistenten
 export interface AiSettings {
+  // General
   enableRoomSuggestions: boolean;
-  enableConsistencyChecks: boolean;
-  enableProactiveLogic: boolean;
   enableFullAnalysis: boolean;
-  enableTemplateLearning: boolean;
+  
+  // Agent
+  enableAgentMode: boolean;
+  agentModel: 'gemini-2.5-flash' | 'gemini-2.5-pro';
+  agentMaxSteps: number;
+  agentAllowDeletion: boolean;
+  agentAllowModification: boolean;
+  
+  // Voice
+  enableVoiceAssistant: boolean;
+  voiceAssistantVoice: 'Zephyr' | 'Puck' | 'Charon' | 'Kore' | 'Fenrir';
+  keepVoiceSessionAlive: boolean;
+  voiceHandOffThreshold: number;
+  voiceAutoRestart: boolean;
 }
 
 

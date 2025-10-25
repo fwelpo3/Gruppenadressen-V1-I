@@ -109,9 +109,8 @@ export const AreaCard: React.FC<AreaCardProps> = ({ area, onAreaChange, onRemove
                 />
                 <button 
                     onClick={(e) => { e.stopPropagation(); setIsSaveModalOpen(true); }} 
-                    className="p-2 text-slate-400 hover:text-sky-400 ml-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={project.aiSettings.enableTemplateLearning ? "Als Vorlage speichern" : "Funktion in den Einstellungen deaktiviert"}
-                    disabled={!project.aiSettings.enableTemplateLearning}
+                    className="p-2 text-slate-400 hover:text-sky-400 ml-2"
+                    title="Als Vorlage speichern"
                 >
                     <CopyIcon />
                 </button>

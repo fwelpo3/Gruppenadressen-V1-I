@@ -1,10 +1,10 @@
-
 import { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { Project } from '../../../domain';
 import { fileToBase64 } from '../../../shared/utils/files';
 import { restrictedProjectSchema } from '../../ai-assistant/shared/projectSchema';
 import { getApiKey } from '../../../shared/services/apiKeyService';
+import { Message } from '../components/ChatMessage';
 
 interface ChangeProposal {
     newProject: Project;
@@ -41,18 +41,18 @@ const chatResponseSchema = {
     },
 };
 
-const chatSystemInstruction = `Du bist ein konversationeller KNX-Projektassistent. Du erhältst eine KNX-Projektstruktur als JSON-Objekt und einen Benutzerbefehl. Manchmal erhältst du auch Dateien (z.B. Bilder, PDFs, Textdateien) als Kontext.
-Deine Aufgabe ist es, entweder **die Projektstruktur** basierend auf dem Befehl und dem Kontext der Dateien zu ändern oder **eine Frage** zum Projekt/den Dateien zu beantworten.
+const chatSystemInstruction = `Du bist ein konversationeller KNX-Projektassistent. Du erhältst eine KNX-Projektstruktur als JSON-Objekt, einen bisherigen Gesprächsverlauf und einen neuen Benutzerbefehl. Manchmal erhältst du auch Dateien (z.B. Bilder, PDFs, Textdateien) als Kontext.
+Deine Aufgabe ist es, entweder **die Projektstruktur** basierend auf dem Befehl und dem Kontext der Dateien und des Gesprächsverlaufs zu ändern oder **eine Frage** zum Projekt/den Dateien/dem Gespräch zu beantworten.
 
 1.  **Wenn der Befehl eine Anweisung zur Änderung des Projekts ist** (z.B. 'füge einen Raum hinzu', 'benenne Bereich um', 'füge Heizung zu allen Schlafzimmern hinzu', 'erstelle Räume basierend auf dem Grundriss in der Datei'):
-    - Berücksichtige den Inhalt der bereitgestellten Dateien bei der Umsetzung der Änderung.
+    - Berücksichtige den Inhalt der bereitgestellten Dateien und den bisherigen Gesprächsverlauf bei der Umsetzung der Änderung.
     - Modifiziere das bereitgestellte Projekt-JSON, um die Anfrage zu erfüllen. Mache so wenige Änderungen wie möglich. Behalte alle vorhandenen IDs bei. Erstelle neue IDs für neue Elemente (z.B. Räume, Instanzen).
     - Erstelle eine prägnante, benutzerfreundliche Zusammenfassung der von dir vorgenommenen Änderungen.
     - Antworte mit einem JSON-Objekt, bei dem 'changeProposal' das 'newProject'-Objekt (das nur 'name' und 'areas' enthält) und die 'summary' enthält und 'answer' 'null' ist.
 
 2.  **Wenn der Befehl eine Frage ist** (z.B. 'wie viele Räume sind im Keller?', 'was steht in diesem Dokument?', 'welche Räume haben keine Jalousien?'):
-    - Analysiere das Projekt-JSON und den Inhalt der Dateien, um die Antwort zu finden.
-    - Formuliere eine klare, natürlichsprachliche Antwort.
+    - Analysiere das Projekt-JSON, den Gesprächsverlauf und den Inhalt der Dateien, um die Antwort zu finden.
+    - Formuliere eine klare, natürlichsprachliche Antwort, die sich auf den vorherigen Kontext bezieht, falls nötig.
     - Antworte mit einem JSON-Objekt, bei dem 'changeProposal' 'null' ist und 'answer' deine Textantwort enthält.
 
 3.  **Wenn der Befehl unklar ist oder du mehr Informationen benötigst**:
@@ -63,7 +63,7 @@ Deine Aufgabe ist es, entweder **die Projektstruktur** basierend auf dem Befehl 
 - **Fokus auf Projektstruktur:** Du darfst NUR den Projektnamen ('name') und die Projektstruktur ('areas': Bereiche, Räume, Funktionen) ändern. Du darfst KEINESFALLS andere App-Einstellungen wie Gerätekonfigurationen ('deviceConfig'), Ansichtsoptionen ('viewOptions') oder KI-Einstellungen ('aiSettings') modifizieren. Das zurückgegebene 'newProject'-Objekt darf nur die Felder 'name' und 'areas' enthalten.
 - **Sei proaktiv:** Wenn ein Befehl vage ist (z.B. "füge ein Büro hinzu"), treffe sinnvolle Annahmen (z.B. erstelle es im letzten Bereich, gib ihm einen Standardnamen, füge typische Büro-Funktionen wie Licht und Jalousien hinzu), anstatt nachzufragen. Erwähne deine Annahmen in der Zusammenfassung.
 - **Vermeide klärende Fragen:** Frage nur dann nach, wenn ein Befehl völlig unverständlich ist. Es ist besser, eine vernünftige Annahme zu treffen, die der Benutzer leicht rückgängig machen kann, als den Arbeitsfluss zu unterbrechen.
-- **Kontext nutzen:** Beziehe den gesamten Projektkontext mit ein. Wenn der Benutzer "füge Heizung zu den Schlafzimmern hinzu" sagt, identifiziere alle Räume, die als Schlafzimmer gelten könnten (z.B. "Schlafen", "Kind 1", "Eltern"), und wende die Änderung auf alle an.
+- **Kontext nutzen:** Beziehe den gesamten Projektkontext und den Gesprächsverlauf mit ein. Wenn der Benutzer "füge Heizung zu den Schlafzimmern hinzu" sagt, identifiziere alle Räume, die als Schlafzimmer gelten könnten (z.B. "Schlafen", "Kind 1", "Eltern"), und wende die Änderung auf alle an.
 
 **Deine Antwort MUSS immer ein JSON-Objekt sein, das dem vorgegebenen Schema entspricht.** Antworte niemals mit reinem Text.`;
 
@@ -90,11 +90,11 @@ Deine Aufgaben in jeder Schleife sind:
 Deine Antwort MUSS IMMER ein JSON-Objekt sein, das dem 'agentThinkSchema' entspricht.`;
 
 
-export const useAiChat = () => {
+export const useAiChat = ({ agentModel }: { agentModel: 'gemini-2.5-flash' | 'gemini-2.5-pro' }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const submitQuery = useCallback(async (project: Project, query: string, files: File[]): Promise<ProcessedChatResponse | null> => {
+    const submitQuery = useCallback(async (project: Project, query: string, files: File[], messages: Message[]): Promise<ProcessedChatResponse | null> => {
         setIsLoading(true);
         setError(null);
 
@@ -104,26 +104,33 @@ export const useAiChat = () => {
             
             const ai = new GoogleGenAI({ apiKey });
 
-            // The AI gets the full project for context, but the schema will restrict its output.
             const projectForApi = JSON.parse(JSON.stringify(project));
             
-            const textPrompt = `Hier ist das aktuelle Projekt:\n${JSON.stringify(projectForApi, null, 2)}\n\nBefehl des Benutzers: "${query}"`;
-            
-            const parts: any[] = [];
+            const history = messages
+                .filter(m => !m.isLoading && m.id !== 'initial') // Exclude loading and initial messages
+                .map(msg => ({
+                    role: msg.sender === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.text }]
+                }));
+
+            const userQueryParts: any[] = [];
             for (const file of files) {
                 const base64Data = await fileToBase64(file);
-                parts.push({
+                userQueryParts.push({
                     inlineData: {
                         mimeType: file.type,
                         data: base64Data,
                     },
                 });
             }
-            parts.push({ text: textPrompt });
+            const textPrompt = `Hier ist das aktuelle Projekt:\n${JSON.stringify(projectForApi, null, 2)}\n\nBefehl des Benutzers: "${query}"`;
+            userQueryParts.push({ text: textPrompt });
+
+            const contents = [...history, { role: 'user', parts: userQueryParts }];
             
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
-                contents: { parts },
+                contents: contents as any, // Cast because SDK types might be stricter
                 config: {
                     systemInstruction: chatSystemInstruction,
                     responseMimeType: "application/json",
@@ -135,17 +142,14 @@ export const useAiChat = () => {
             const parsedJson: ChatResponsePayload = JSON.parse(jsonString);
             
             if (parsedJson.changeProposal?.newProject) {
-                // The AI returns a partial project. We merge it with the existing one
-                // to create a full, valid project object, preserving all settings.
                 const partialProject = parsedJson.changeProposal.newProject;
                 
                 const fullNewProject: Project = {
-                    ...project, // Start with the old project to keep all settings
-                    name: partialProject.name, // Overwrite name from AI
-                    areas: partialProject.areas, // Overwrite areas from AI
+                    ...project,
+                    name: partialProject.name,
+                    areas: partialProject.areas,
                 };
 
-                // Return the full, safe project object.
                 return {
                     answer: null,
                     changeProposal: {
@@ -155,7 +159,6 @@ export const useAiChat = () => {
                 };
             }
             
-            // If there were no changes, just return the text answer.
             return {
                 changeProposal: null,
                 answer: parsedJson.answer,
@@ -178,7 +181,6 @@ export const useAiChat = () => {
             if (!apiKey) throw new Error("API-Schlüssel ist nicht konfiguriert.");
             const ai = new GoogleGenAI({ apiKey });
             
-            // Only pass the structural part of the project to the agent's thinking process.
             const projectForAgent = {
                 name: project.name,
                 areas: project.areas,
@@ -186,7 +188,7 @@ export const useAiChat = () => {
             const prompt = `Hier ist das Originalziel: "${goal}"\n\nUnd hier ist das aktuelle Projekt:\n${JSON.stringify(projectForAgent, null, 2)}\n\nWas ist der nächste logische Schritt, um das Ziel zu erreichen?`;
 
             const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: agentModel,
                 contents: prompt,
                 config: {
                     systemInstruction: agentSystemInstruction,
@@ -202,7 +204,7 @@ export const useAiChat = () => {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [agentModel]);
 
     return { isLoading, error, submitQuery, getNextAgentStep };
 };

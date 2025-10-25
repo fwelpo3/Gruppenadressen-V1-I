@@ -129,11 +129,6 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }, [project, showToast, setProject]);
 
     const handleLearnTemplateFromArea = useCallback((areaId: string, name: string, options: Record<string, boolean>) => {
-        if (!project.aiSettings.enableTemplateLearning) {
-            showToast("Funktion in den KI Co-Pilot Einstellungen deaktiviert.");
-            return;
-        }
-
         const areaToLearn = project.areas.find(a => a.id === areaId);
         if (!areaToLearn) return;
 
@@ -276,11 +271,6 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }, [project.areas, project.deviceConfig, project.viewOptions.expandNewItems, showToast, setProject]);
 
     const handleLearnTemplateFromRoom = useCallback((room: Room, name: string, options: Record<string, boolean>) => {
-        if (!project.aiSettings.enableTemplateLearning) {
-            showToast("Funktion in den KI Co-Pilot Einstellungen deaktiviert.");
-            return;
-        }
-
         if (!name || !name.trim()) return;
 
         const newTemplate: CustomRoomTemplate = {

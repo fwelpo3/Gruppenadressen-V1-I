@@ -1,5 +1,3 @@
-
-
 import { Project, FunctionType, ViewOptions, AiSettings, Area, Room, FunctionInstance, GaFunction, DeviceConfig } from '../../domain';
 import { DEFAULT_DEVICE_CONFIG } from '../config/deviceConfig';
 
@@ -34,11 +32,21 @@ export const getInitialProject = (): Project => ({
         showGaNameTemplateEditor: false,
     },
     aiSettings: {
-        enableRoomSuggestions: false,
-        enableConsistencyChecks: false,
-        enableProactiveLogic: false,
-        enableFullAnalysis: false,
-        enableTemplateLearning: false,
+        // General
+        enableRoomSuggestions: true,
+        enableFullAnalysis: true,
+        // Agent
+        enableAgentMode: true,
+        agentModel: 'gemini-2.5-flash',
+        agentMaxSteps: 10,
+        agentAllowDeletion: false, // Safer default
+        agentAllowModification: true,
+        // Voice
+        enableVoiceAssistant: true,
+        voiceAssistantVoice: 'Zephyr',
+        keepVoiceSessionAlive: false,
+        voiceHandOffThreshold: 3,
+        voiceAutoRestart: true,
     },
 });
 

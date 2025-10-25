@@ -62,42 +62,6 @@ export const ViewSettingsEditor: React.FC<ViewSettingsEditorProps> = ({ project,
                 <GaNameTemplateEditor isSettingsPanel={true} />
             </div>
 
-            <div className="border-t border-slate-700 pt-6">
-                <h3 className="text-lg font-bold text-sky-400 mb-4">Editor-Verhalten</h3>
-                <div className="space-y-4">
-                    <div className="flex items-start justify-between p-3 bg-slate-800/50 rounded-lg">
-                        <div>
-                            <label htmlFor="duplicateRoomsOnAdd-toggle" className="font-medium text-slate-300 cursor-pointer select-none">
-                                Neuen Raum durch Duplizieren erstellen
-                            </label>
-                            <p className="text-xs text-slate-400 mt-1">Wenn aktiviert, wird beim Hinzufügen eines Raumes der vorherige als Vorlage kopiert.</p>
-                        </div>
-                        <button
-                            id="duplicateRoomsOnAdd-toggle" role="switch" aria-checked={project.viewOptions.duplicateRoomsOnAdd}
-                            onClick={() => setProject(p => ({ ...p, viewOptions: { ...p.viewOptions, duplicateRoomsOnAdd: !p.viewOptions.duplicateRoomsOnAdd } }))}
-                            className={`${project.viewOptions.duplicateRoomsOnAdd ? 'bg-sky-500' : 'bg-slate-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-800`}
-                        >
-                            <span className={`${project.viewOptions.duplicateRoomsOnAdd ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
-                        </button>
-                    </div>
-                    <div className="flex items-start justify-between p-3 bg-slate-800/50 rounded-lg">
-                        <div>
-                            <label htmlFor="expandNewItems-toggle" className="font-medium text-slate-300 cursor-pointer select-none">
-                                Neue Elemente automatisch ausklappen
-                            </label>
-                            <p className="text-xs text-slate-400 mt-1">Neu hinzugefügte Bereiche und Räume werden standardmäßig ausgeklappt angezeigt.</p>
-                        </div>
-                        <button
-                            id="expandNewItems-toggle" role="switch" aria-checked={project.viewOptions.expandNewItems}
-                            onClick={() => setProject(p => ({ ...p, viewOptions: { ...p.viewOptions, expandNewItems: !p.viewOptions.expandNewItems } }))}
-                            className={`${project.viewOptions.expandNewItems ? 'bg-sky-500' : 'bg-slate-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-800`}
-                        >
-                            <span className={`${project.viewOptions.expandNewItems ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
         </div>
     );
 };

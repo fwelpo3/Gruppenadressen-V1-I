@@ -3,21 +3,23 @@
 import React from 'react';
 
 // FIX: Add `style` property to allow inline styling of icons.
+// FIX: Add `strokeWidth` property to allow customizing icon stroke.
 interface IconProps {
     className?: string;
     size?: number; // Tailwind size unit, e.g., 4, 5, 6
     style?: React.CSSProperties;
+    strokeWidth?: number;
 }
 
-// FIX: Accept and pass down the `style` prop to the SVG element.
-const Icon: React.FC<IconProps & { children: React.ReactNode }> = ({ children, className, size = 5, style }) => (
+// FIX: Accept and pass down the `style` and `strokeWidth` props to the SVG element.
+const Icon: React.FC<IconProps & { children: React.ReactNode }> = ({ children, className, size = 5, style, strokeWidth = 2 }) => (
     <svg 
         xmlns="http://www.w3.org/2000/svg" 
         className={`${className || ''} h-${size} w-${size}`}
         fill="none" 
         viewBox="0 0 24 24" 
         stroke="currentColor" 
-        strokeWidth={2}
+        strokeWidth={strokeWidth}
         style={style}>
         {children}
     </svg>
@@ -174,5 +176,61 @@ export const TextareaIcon: React.FC<IconProps> = (props) => (
 export const ChipsIcon: React.FC<IconProps> = (props) => (
     <Icon {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 8h4V4H4v4zm6 0h4V4h-4v4zm6 0h4V4h-4v4zM4 14h4v-4H4v4zm6 0h4v-4h-4v4zm6 0h4v-4h-4v4zM4 20h4v-4H4v4zm6 0h4v-4h-4v4zm6 0h4v-4h-4v4z" />
+    </Icon>
+);
+
+export const KeyIcon: React.FC<IconProps> = (props) => (
+    <Icon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </Icon>
+);
+
+export const KeyboardIcon: React.FC<IconProps> = (props) => (
+    <Icon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 16h.01M12 16h.01M17 16h.01M10 20h4" />
+    </Icon>
+);
+
+export const LayoutDashboardIcon: React.FC<IconProps> = (props) => (
+    <Icon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4h6v6H4V4z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14 4h6v6h-6V4z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 14h6v6H4v-6z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14 14h6v6h-6v-6z" />
+    </Icon>
+);
+
+export const FileTextIcon: React.FC<IconProps> = (props) => (
+    <Icon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14 2v6h6" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16 13H8" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16 17H8" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10 9H8" />
+    </Icon>
+);
+
+export const SitemapIcon: React.FC<IconProps> = (props) => (
+    <Icon {...props} strokeWidth={1.5}>
+        <rect x="2" y="3" width="6" height="6" rx="2" />
+        <rect x="16" y="15" width="6" height="6" rx="2" />
+        <rect x="9" y="9" width="6" height="6" rx="2" />
+        <path d="M5 9v1.5a1.5 1.5 0 0 0 1.5 1.5H9" />
+        <path d="M12 15v-1.5a1.5 1.5 0 0 1 1.5-1.5H16" />
+    </Icon>
+);
+
+export const MicrophoneIcon: React.FC<IconProps> = (props) => (
+    <Icon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+    </Icon>
+);
+
+export const MicrophoneOffIcon: React.FC<IconProps> = (props) => (
+    <Icon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.586 15.586a7 7 0 01-9.172 0L3 18m13.172-2.414a7 7 0 00-9.172 0L3 18m13.172-2.414l-2.414-2.414m2.414 2.414L18 18m-2.828-4.828a3 3 0 01-4.243 0M12 5v6m-3-3h6" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1" />
     </Icon>
 );

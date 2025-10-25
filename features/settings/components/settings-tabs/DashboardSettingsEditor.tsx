@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { Project, ViewOptions, FunctionType, GaFunction, DeviceConfig } from '../../../../domain';
 import { ChevronDownIcon } from '../../../../shared/ui/icons';
@@ -30,9 +32,7 @@ export const DashboardSettingsEditor: React.FC<DashboardSettingsEditorProps> = (
         </div>
     );
 
-    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
-        Object.keys(project.deviceConfig).reduce((acc, key) => ({ ...acc, [key]: true }), {})
-    );
+    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
 
     const handleVisibilityChange = (type: FunctionType, isVisible: boolean) => {
         setProject(p => ({
@@ -89,9 +89,9 @@ export const DashboardSettingsEditor: React.FC<DashboardSettingsEditorProps> = (
     return (
         <div className="space-y-6">
             <div>
-                 <h3 className="text-lg font-bold text-sky-400 mb-4">Dashboard-Ansicht</h3>
+                 <h3 className="text-lg font-bold text-sky-400 mb-4">Sichtbare Panels</h3>
                  <p className="text-sm text-slate-400 mb-6">
-                    Passen Sie an, welche Panels auf der Hauptseite sichtbar sind und welche Funktionstypen in der Raum-Bearbeitung zur Auswahl stehen.
+                    Passen Sie an, welche Panels auf der Hauptseite sichtbar sind.
                 </p>
                 <div className="space-y-4">
                     <SettingToggle
@@ -116,6 +116,23 @@ export const DashboardSettingsEditor: React.FC<DashboardSettingsEditorProps> = (
                     />
                 </div>
             </div>
+
+            <div className="border-t border-slate-700 pt-6">
+                <h3 className="text-lg font-bold text-sky-400 mb-4">Editor-Verhalten</h3>
+                <div className="space-y-4">
+                    <SettingToggle
+                        settingKey="duplicateRoomsOnAdd"
+                        label="Neuen Raum durch Duplizieren erstellen"
+                        description="Wenn aktiviert, wird beim Hinzufügen eines Raumes der vorherige als Vorlage kopiert."
+                     />
+                     <SettingToggle
+                        settingKey="expandNewItems"
+                        label="Neue Elemente automatisch ausklappen"
+                        description="Neu hinzugefügte Bereiche und Räume werden standardmäßig ausgeklappt angezeigt."
+                     />
+                </div>
+            </div>
+
              <div className="border-t border-slate-700 pt-6">
                 <h3 className="text-lg font-bold text-sky-400 mb-4">Sichtbarkeit der Funktionen</h3>
                 <p className="text-sm text-slate-400 mb-4">

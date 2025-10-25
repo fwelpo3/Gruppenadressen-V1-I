@@ -2,6 +2,7 @@
   "name": "V16 GA",
   "description": "weiterentwicklung\n",
   "requestFramePermissions": [
-    "camera"
+    "camera",
+    "microphone"
   ]
 }

@@ -1,9 +1,12 @@
 
 
 import React, { useRef, useEffect, useState } from 'react';
-// FIX: Import `ChatMessage` component.
 import { Message, ChatMessage } from './ChatMessage';
 import { CloseIcon, SparklesIcon, PaperclipIcon, RobotIcon, StopIcon } from '../../../shared/ui/icons';
+import { VoiceButton } from './VoiceButton';
+import { VoiceStatus } from '../hooks/useAiVoice';
+import { Project } from '../../../domain';
+
 
 interface ChatPanelProps {
     isOpen: boolean;
@@ -19,10 +22,15 @@ interface ChatPanelProps {
     runAgent: (goal: string, files: File[]) => void;
     stopAgent: () => void;
     handleNormalSubmit: () => void;
+    voiceStatus: VoiceStatus;
+    startVoiceSession: () => void;
+    stopVoiceSession: () => void;
+    aiSettings: Project['aiSettings'];
 }
 
 export const ChatPanel: React.FC<ChatPanelProps> = ({ 
-    isOpen, onClose, messages, input, setInput, files, setFiles, isAgentRunning, isLoading, runAgent, stopAgent, handleNormalSubmit 
+    isOpen, onClose, messages, input, setInput, files, setFiles, isAgentRunning, isLoading, runAgent, stopAgent, handleNormalSubmit,
+    voiceStatus, startVoiceSession, stopVoiceSession, aiSettings
 }) => {
     const [isAgentMode, setIsAgentMode] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -30,6 +38,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const isVoiceActive = voiceStatus !== 'idle' && voiceStatus !== 'error';
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,8 +51,11 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
             // Reset local UI state when closing, but don't stop the agent
             setFiles([]);
             setInput('');
+            if (isVoiceActive && !aiSettings.keepVoiceSessionAlive) {
+                stopVoiceSession();
+            }
         }
-    }, [isOpen]);
+    }, [isOpen, isVoiceActive, aiSettings.keepVoiceSessionAlive, stopVoiceSession]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -88,6 +100,14 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             setFiles(prev => [...prev, ...Array.from(e.dataTransfer.files)]);
             e.dataTransfer.clearData();
+        }
+    };
+
+    const handleToggleVoice = () => {
+        if (isVoiceActive) {
+            stopVoiceSession();
+        } else {
+            startVoiceSession();
         }
     };
 
@@ -136,21 +156,24 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                         </div>
                     )}
                     <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+                        {aiSettings.enableVoiceAssistant && (
+                             <VoiceButton status={voiceStatus} onClick={handleToggleVoice} />
+                        )}
                         <div className="flex-grow relative">
                              <input
                                 ref={inputRef}
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder={isAgentRunning ? "Agent arbeitet..." : isAgentMode ? "Ziel für Agenten beschreiben..." : "Ihre Anweisung..."}
-                                disabled={isLoading || isAgentRunning}
-                                className="w-full bg-slate-900/50 border border-slate-600 rounded-md shadow-sm pl-10 pr-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 disabled:opacity-50"
+                                placeholder={isVoiceActive ? "Spracheingabe aktiv..." : isAgentRunning ? "Agent arbeitet..." : isAgentMode ? "Ziel für Agenten beschreiben..." : "Ihre Anweisung..."}
+                                disabled={isLoading || isAgentRunning || isVoiceActive}
+                                className={`w-full bg-slate-900/50 border border-slate-600 rounded-md shadow-sm pr-3 py-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 disabled:opacity-50 ${aiSettings.enableVoiceAssistant ? 'pl-3' : 'pl-10'}`}
                             />
                             <div className="absolute left-2 top-1/2 -translate-y-1/2">
                                  <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    disabled={isLoading || isAgentRunning}
+                                    disabled={isLoading || isAgentRunning || isVoiceActive}
                                     className="text-slate-400 hover:text-sky-400 disabled:opacity-50"
                                     aria-label="Dateien anhängen"
                                     title="Dateien anhängen"
@@ -162,7 +185,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                         </div>
                         <button
                             type="submit"
-                            disabled={isLoading || (!isAgentRunning && (!input.trim() && files.length === 0))}
+                            disabled={isLoading || isVoiceActive || (!isAgentRunning && (!input.trim() && files.length === 0))}
                             className={`flex items-center justify-center gap-2 w-40 text-white px-4 py-2 rounded-md font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:cursor-not-allowed ${
                                 isAgentRunning ? 'bg-red-600 hover:bg-red-500 focus:ring-red-500' : 'bg-sky-600 hover:bg-sky-500 focus:ring-sky-500 disabled:bg-slate-600'
                             }`}
@@ -170,19 +193,21 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                             {isAgentRunning ? <><StopIcon /> Stoppen</> : isAgentMode ? <><RobotIcon /> Agent starten</> : 'Senden'}
                         </button>
                     </form>
-                    <div className="flex items-center justify-center gap-2 mt-3">
-                         <label htmlFor="agent-mode-toggle" className={`text-sm font-medium cursor-pointer ${isAgentMode ? 'text-sky-400': 'text-slate-400'}`}>
-                           Agenten-Modus
-                        </label>
-                        <button
-                            id="agent-mode-toggle" role="switch" aria-checked={isAgentMode}
-                            onClick={() => setIsAgentMode(p => !p)}
-                            disabled={isAgentRunning}
-                            className={`${isAgentMode ? 'bg-sky-500' : 'bg-slate-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-50`}
-                        >
-                            <span className={`${isAgentMode ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
-                        </button>
-                    </div>
+                    {aiSettings.enableAgentMode && (
+                        <div className="flex items-center justify-center gap-2 mt-3">
+                            <label htmlFor="agent-mode-toggle" className={`text-sm font-medium cursor-pointer ${isAgentMode ? 'text-sky-400': 'text-slate-400'}`}>
+                            Agenten-Modus
+                            </label>
+                            <button
+                                id="agent-mode-toggle" role="switch" aria-checked={isAgentMode}
+                                onClick={() => setIsAgentMode(p => !p)}
+                                disabled={isAgentRunning || isVoiceActive}
+                                className={`${isAgentMode ? 'bg-sky-500' : 'bg-slate-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-50`}
+                            >
+                                <span className={`${isAgentMode ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
+                            </button>
+                        </div>
+                    )}
                 </footer>
             </div>
         </>

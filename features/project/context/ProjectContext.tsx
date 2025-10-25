@@ -128,11 +128,6 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }, [project.areas, project.deviceConfig, project.viewOptions.expandNewItems, showToast]);
 
     const handleLearnTemplateFromRoom = useCallback((room: Room) => {
-        if (!project.aiSettings.enableTemplateLearning) {
-            showToast("Funktion in den KI Co-Pilot Einstellungen deaktiviert.");
-            return;
-        }
-
         const name = window.prompt(`Wie soll die neue Vorlage basierend auf "${room.name}" heißen?`, `Vorlage: ${room.name}`);
         if (!name || !name.trim()) return;
 
