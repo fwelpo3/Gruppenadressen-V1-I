@@ -1,8 +1,10 @@
+
 import { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { Project } from '../../../domain';
 import { fileToBase64 } from '../../../shared/utils/files';
 import { restrictedProjectSchema } from '../../ai-assistant/shared/projectSchema';
+import { getApiKey } from '../../../shared/services/apiKeyService';
 
 interface ChangeProposal {
     newProject: Project;
@@ -97,9 +99,10 @@ export const useAiChat = () => {
         setError(null);
 
         try {
-            if (!process.env.API_KEY) throw new Error("API-Schlüssel ist nicht konfiguriert.");
+            const apiKey = getApiKey();
+            if (!apiKey) throw new Error("API-Schlüssel ist nicht konfiguriert.");
             
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
 
             // The AI gets the full project for context, but the schema will restrict its output.
             const projectForApi = JSON.parse(JSON.stringify(project));
@@ -171,8 +174,9 @@ export const useAiChat = () => {
         setIsLoading(true);
         setError(null);
         try {
-            if (!process.env.API_KEY) throw new Error("API-Schlüssel ist nicht konfiguriert.");
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const apiKey = getApiKey();
+            if (!apiKey) throw new Error("API-Schlüssel ist nicht konfiguriert.");
+            const ai = new GoogleGenAI({ apiKey });
             
             // Only pass the structural part of the project to the agent's thinking process.
             const projectForAgent = {

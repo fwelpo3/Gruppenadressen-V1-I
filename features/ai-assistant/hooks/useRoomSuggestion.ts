@@ -1,6 +1,8 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { AiFunctionSuggestion } from '../../../domain';
+import { getApiKey } from '../../../shared/services/apiKeyService';
 
 const roomSuggestionSchema = {
     type: Type.OBJECT,
@@ -29,12 +31,13 @@ export const useRoomSuggestion = (roomName: string, isEnabled: boolean) => {
         setSuggestion(null);
 
         try {
-            if (!process.env.API_KEY) {
+            const apiKey = getApiKey();
+            if (!apiKey) {
                 // Do not throw an error here, just fail silently as it's an enhancement
                 console.warn("API-Schlüssel für Raum-Vorschläge nicht konfiguriert.");
                 return;
             }
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
             
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',

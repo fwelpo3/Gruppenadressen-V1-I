@@ -1,6 +1,8 @@
+
 import { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { Project, AiAnalysisResult } from '../../../domain';
+import { getApiKey } from '../../../shared/services/apiKeyService';
 
 const analysisFindingSchema = {
     type: Type.OBJECT,
@@ -79,13 +81,14 @@ export const useAiProjectAnalyzer = () => {
         setAnalysisResult(null);
 
         try {
-            if (!process.env.API_KEY) {
+            const apiKey = getApiKey();
+            if (!apiKey) {
                 throw new Error("API-Schlüssel ist nicht konfiguriert.");
             }
              if (project.areas.length === 0) {
                 throw new Error("Das Projekt ist leer und kann nicht analysiert werden.");
             }
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
 
             const promptText = projectToText(project);
 

@@ -1,7 +1,9 @@
+
 import { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { Project, AiAnalysisFinding, AiChangeProposal } from '../../../domain';
 import { restrictedProjectSchema } from '../shared/projectSchema';
+import { getApiKey } from '../../../shared/services/apiKeyService';
 
 const fixResponseSchema = {
     type: Type.OBJECT,
@@ -34,9 +36,10 @@ export const useAiProjectFixer = () => {
         setProposal(null);
 
         try {
-            if (!process.env.API_KEY) throw new Error("API-Schlüssel ist nicht konfiguriert.");
+            const apiKey = getApiKey();
+            if (!apiKey) throw new Error("API-Schlüssel ist nicht konfiguriert.");
 
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
             
             // Create a deep copy and remove properties that cause issues with the API schema
             const projectForApi = JSON.parse(JSON.stringify(project));

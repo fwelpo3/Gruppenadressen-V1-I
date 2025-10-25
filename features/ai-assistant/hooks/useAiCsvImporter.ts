@@ -1,7 +1,9 @@
 
+
 import { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { AiProjectSuggestion } from '../../../domain';
+import { getApiKey } from '../../../shared/services/apiKeyService';
 
 // Reusing the same schema as the wizard for a consistent output structure
 const csvImportResponseSchema = {
@@ -57,14 +59,15 @@ export const useAiCsvImporter = () => {
         setError(null);
 
         try {
-            if (!process.env.API_KEY) {
+            const apiKey = getApiKey();
+            if (!apiKey) {
                 throw new Error("API-Schlüssel ist nicht konfiguriert.");
             }
             if (!csvContent.trim()) {
                 throw new Error("Die CSV-Datei ist leer.");
             }
 
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
             
             const prompt = `Bitte analysiere die folgende CSV-Datei mit KNX-Gruppenadressen und erstelle eine Projektstruktur daraus:\n\n${csvContent}`;
 

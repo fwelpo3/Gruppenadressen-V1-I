@@ -9,6 +9,7 @@ import { Footer } from '../features/dashboard/components/Footer';
 import { SettingsPanel } from '../features/settings/components/SettingsPanel';
 import { AiAssistantWizard } from '../features/ai-assistant/components/AiAssistantWizard';
 import { loadApiKey, saveApiKey } from '../adapters/persistence/localStorage';
+import { setApiKey as setGlobalApiKey } from '../shared/services/apiKeyService';
 import { ProjectAnalysisModal } from '../features/ai-assistant/components/ProjectAnalysisModal';
 import { ProjectProvider, useProjectContext } from '../context/ProjectContext';
 import { ToastProvider, useToast } from '../context/ToastContext';
@@ -19,12 +20,6 @@ import { useAiChat } from '../features/ai-chat/hooks/useAiChat';
 import { Message } from '../features/ai-chat/components/ChatMessage';
 import { GaNameTemplateEditor } from '../features/structure-editor/components/GaNameTemplateEditor';
 
-
-// HACK: This makes the API key available to the AI hooks.
-// In a real-world app, this would be handled via a secure backend.
-if (typeof process === 'undefined') {
-  (window as any).process = { env: {} };
-}
 
 // --- Haupt-App-Komponente (UI) ---
 const AppContent: React.FC = () => {
@@ -64,9 +59,9 @@ const AppContent: React.FC = () => {
 
     const allRoomIds = useMemo(() => project.areas.flatMap(a => a.rooms.map(r => r.id)), [project.areas]);
 
-    // HACK: This sets the API key in a way the AI hooks can read it.
+    // Make the API key available to all AI hooks via a dedicated service.
     useEffect(() => {
-        (process.env as any).API_KEY = apiKey;
+        setGlobalApiKey(apiKey);
     }, [apiKey]);
     
     const handleApiKeyChange = (newKey: string) => {

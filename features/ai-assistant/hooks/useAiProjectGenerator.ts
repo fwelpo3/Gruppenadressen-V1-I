@@ -1,7 +1,9 @@
+
 import { useState, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { AiProjectSuggestion } from '../../../domain';
 import { fileToBase64 } from '../../../shared/utils/files';
+import { getApiKey } from '../../../shared/services/apiKeyService';
 
 const wizardResponseSchema = {
   type: Type.ARRAY,
@@ -49,10 +51,11 @@ export const useAiProjectGenerator = () => {
         setSuggestion(null);
 
         try {
-            if (!process.env.API_KEY) {
+            const apiKey = getApiKey();
+            if (!apiKey) {
                 throw new Error("API-Schlüssel ist nicht konfiguriert.");
             }
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey });
             
             const parts: any[] = [{ text }];
 
