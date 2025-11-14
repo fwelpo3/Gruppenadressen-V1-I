@@ -1,8 +1,8 @@
 import React, {useMemo, useState, useEffect} from 'react'
 
 import { StructureEditor } from '../../structure-editor/components/StructureEditor';
-import { ActionsPanel } from '../components/ActionsPanel';
-import { PreviewPanel } from '../components/PreviewPanel';
+import { ActionsPanel } from '../root/ActionsPanel';
+import { PreviewPanel } from '../root/PreviewPanel';
 
 import { BulkEditPanel } from '../../bulk-edit/components';
 import { GaNameTemplateEditor } from '../../structure-editor/components/GaNameTemplateEditor';

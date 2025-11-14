@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ProjectProvider } from '../context/ProjectContext';
 import { ToastProvider } from '../context/ToastContext';
 import { LoggingProvider } from '../context/LoggingContext';
-import { DashboardPage } from '../features/dashboard/pages/DashboardPage';
+import { DashboardPage } from '../features/dashboard/root/root';
 import { AiChatController } from '../features/ai-chat/components/AiChatController';
 import { useGlobalShortcuts } from '../features/keyboard-shortcuts/hooks/useGlobalShortcuts';
 

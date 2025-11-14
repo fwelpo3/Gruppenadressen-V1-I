@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Project, AiAnalysisResult } from '../../../domain';
-import { Header } from '../components/Header';
-import { Footer } from '../components/Footer';
+import { Header } from './Header';
+import { Footer } from './Footer';
 import { SettingsPanel } from '../../settings/components/SettingsPanel';
 import { AiAssistantWizard } from '../../ai-assistant/components/AiAssistantWizard';
 import { loadApiKey, saveApiKey } from '../../../adapters/persistence/localStorage';
@@ -9,7 +9,7 @@ import { setApiKey as setGlobalApiKey } from '../../../shared/services/apiKeySer
 import { ProjectAnalysisModal } from '../../ai-assistant/components/ProjectAnalysisModal';
 import { useProjectContext } from '../../../context/ProjectContext';
 import { useToast } from '../../../context/ToastContext';
-import { MainDashboardView } from '../components/MainDashboardView';
+import { MainDashboardView } from '../pages/MainDashboardView';
 
 interface DashboardPageProps {
     isSettingsOpen: boolean;
