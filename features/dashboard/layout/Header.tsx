@@ -1,17 +1,17 @@
 import React from 'react';
-import { SettingsIcon } from '../../../shared/ui/icons';
-import { useProjectContext } from '../../../context/ProjectContext';
+import {SettingsIcon} from '../../../shared/ui/icons';
+import {useProjectContext} from '../../../context/ProjectContext';
 
 interface HeaderProps {
     onToggleSettings: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onToggleSettings }) => {
-    const { project, setProject } = useProjectContext();
-    const { viewOptions } = project;
+export const Header: React.FC<HeaderProps>=({onToggleSettings}) => {
+    const {project,setProject}=useProjectContext();
+    const {viewOptions}=project;
 
-    const handleViewOptionChange = (field: keyof typeof project.viewOptions, value: any) => {
-        setProject(p => ({ ...p, viewOptions: { ...p.viewOptions, [field]: value } }));
+    const handleViewOptionChange=(field: keyof typeof project.viewOptions,value: any) => {
+        setProject(p => ({...p,viewOptions: {...p.viewOptions,[field]: value}}));
     };
 
     return (
@@ -29,10 +29,10 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSettings }) => {
                         </label>
                         <button
                             id="compact-toggle" role="switch" aria-checked={viewOptions.compactMode}
-                            onClick={() => handleViewOptionChange('compactMode', !viewOptions.compactMode)}
-                            className={`${viewOptions.compactMode ? 'bg-sky-500' : 'bg-slate-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-800`}
+                            onClick={() => handleViewOptionChange('compactMode',!viewOptions.compactMode)}
+                            className={`${viewOptions.compactMode? 'bg-sky-500':'bg-slate-600'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-800`}
                         >
-                            <span className={`${viewOptions.compactMode ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
+                            <span className={`${viewOptions.compactMode? 'translate-x-6':'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
                         </button>
                     </div>
 
