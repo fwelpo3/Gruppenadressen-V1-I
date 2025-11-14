@@ -58,7 +58,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isSettingsOpen, se
     return (
         <div className={`h-screen bg-slate-900 flex flex-col ${project.viewOptions.compactMode ? 'compact-mode' : ''}`}>
             <Header onToggleSettings={() => setIsSettingsOpen(p => !p)} />
-            <MainDashboardView/>
+            <LoginPage/>
             <Footer />
             <SettingsPanel
                 isOpen={isSettingsOpen}

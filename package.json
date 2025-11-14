@@ -9,9 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.55.0",
+    "@clerk/nextjs": "^6.35.1",
+    "@clerk/react-router": "^2.2.1",
+    "@google/genai": "^1.17.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "@google/genai": "^1.17.0"
+    "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
