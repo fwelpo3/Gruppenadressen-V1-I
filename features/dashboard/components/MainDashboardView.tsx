@@ -3,8 +3,6 @@ import React, {useMemo, useState, useEffect} from 'react'
 import { StructureEditor } from '../../structure-editor/components/StructureEditor';
 import { ActionsPanel } from '../components/ActionsPanel';
 import { PreviewPanel } from '../components/PreviewPanel';
-import { loadApiKey } from '../../../adapters/persistence/localStorage';
-import { setApiKey as setGlobalApiKey } from '../../../shared/services/apiKeyService';
 
 import { BulkEditPanel } from '../../bulk-edit/components';
 import { GaNameTemplateEditor } from '../../structure-editor/components/GaNameTemplateEditor';
@@ -19,12 +17,6 @@ export const MainDashboardView: React.FC = () => {
     // State for modals and panels specific to the dashboard
     const [setIsAiWizardOpen] = useState(false);
     const [setIsAnalysisModalOpen] = useState(false);
-    const [apiKey] = useState<string>(loadApiKey());
-
-    // Make the API key available to all AI hooks via a dedicated service.
-    useEffect(() => {
-        setGlobalApiKey(apiKey);
-    }, [apiKey]);
 
     const { viewOptions } = project;
     const isBulkEditing = selectedRoomIds.length > 0;
