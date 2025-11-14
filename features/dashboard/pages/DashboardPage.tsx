@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Project, AiAnalysisResult } from '../../../domain';
 import { Header } from '../components/Header';
-import { StructureEditor } from '../../structure-editor/components/StructureEditor';
-import { ActionsPanel } from '../components/ActionsPanel';
-import { PreviewPanel } from '../components/PreviewPanel';
 import { Footer } from '../components/Footer';
 import { SettingsPanel } from '../../settings/components/SettingsPanel';
 import { AiAssistantWizard } from '../../ai-assistant/components/AiAssistantWizard';
@@ -12,8 +9,7 @@ import { setApiKey as setGlobalApiKey } from '../../../shared/services/apiKeySer
 import { ProjectAnalysisModal } from '../../ai-assistant/components/ProjectAnalysisModal';
 import { useProjectContext } from '../../../context/ProjectContext';
 import { useToast } from '../../../context/ToastContext';
-import { BulkEditPanel } from '../../bulk-edit/components';
-import { GaNameTemplateEditor } from '../../structure-editor/components/GaNameTemplateEditor';
+import { MainDashboardView } from '../components/MainDashboardView';
 
 interface DashboardPageProps {
     isSettingsOpen: boolean;
@@ -29,7 +25,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isSettingsOpen, se
         handleApplyAiSuggestion,
         selectedRoomIds,
     } = useProjectContext();
-    
+
     // State for modals and panels specific to the dashboard
     const [isAiWizardOpen, setIsAiWizardOpen] = useState(false);
     const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
@@ -40,7 +36,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isSettingsOpen, se
     useEffect(() => {
         setGlobalApiKey(apiKey);
     }, [apiKey]);
-    
+
     const handleApiKeyChange = (newKey: string) => {
         setApiKey(newKey);
         saveApiKey(newKey);
@@ -53,7 +49,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isSettingsOpen, se
         showToast("Änderung wurde erfolgreich übernommen!");
         setCachedAnalysis(null);
     };
-    
+
     const { viewOptions } = project;
     const isBulkEditing = selectedRoomIds.length > 0;
     const isDefaultSidebarVisible = viewOptions.showActionsAndMetricsPanel || viewOptions.showPreviewPanel;
@@ -62,30 +58,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isSettingsOpen, se
     return (
         <div className={`h-screen bg-slate-900 flex flex-col ${project.viewOptions.compactMode ? 'compact-mode' : ''}`}>
             <Header onToggleSettings={() => setIsSettingsOpen(p => !p)} />
-            <main className="flex-grow p-4 lg:p-6 grid grid-cols-1 xl:grid-cols-5 gap-6 max-w-screen-2xl mx-auto w-full min-h-0">
-                <div className={`${showSidebar ? 'xl:col-span-3' : 'xl:col-span-5'} flex flex-col gap-6 min-h-0`}>
-                    <div className="bg-slate-800/50 border border-slate-700 rounded-xl shadow-lg flex-grow flex flex-col min-h-0">
-                       <StructureEditor onStartWithAi={() => setIsAiWizardOpen(true)} />
-                    </div>
-                    {project.viewOptions.showGaNameTemplateEditor && (
-                        <div className="bg-slate-800/50 border border-slate-700 rounded-xl shadow-lg">
-                            <GaNameTemplateEditor />
-                        </div>
-                    )}
-                </div>
-                {showSidebar && (
-                    <aside className="xl:col-span-2 flex flex-col gap-6 min-h-0">
-                       {isBulkEditing ? (
-                            <BulkEditPanel />
-                       ) : (
-                            <>
-                                {viewOptions.showActionsAndMetricsPanel && <ActionsPanel onAnalyze={() => setIsAnalysisModalOpen(true)} />}
-                                {viewOptions.showPreviewPanel && <PreviewPanel />}
-                            </>
-                       )}
-                    </aside>
-                )}
-            </main>
+            <MainDashboardView/>
             <Footer />
             <SettingsPanel
                 isOpen={isSettingsOpen}
